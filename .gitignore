@@ -1,0 +1,8 @@
+/node_modules
+/dist
+.env
+/.sern/command-data-remote.json
+/.sern/generated
+files/credentials.json
+tickets/
+README.md

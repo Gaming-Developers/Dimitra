@@ -1,0 +1,42 @@
+{
+	"extends": "./.sern/tsconfig.json",
+	"compilerOptions": {
+		"resolveJsonModule": true,
+		"moduleResolution": "node",
+		"target": "ESNext",
+		"module": "ESNext",
+		"rootDir": "src",
+		"strict": true,
+		"baseUrl": ".",
+		"esModuleInterop": true,
+		"noImplicitAny": true,
+		"strictNullChecks": true,
+		"skipLibCheck": true,
+		"forceConsistentCasingInFileNames": true,
+		"allowJs": true,
+		"allowUnreachableCode": true,
+		"allowUnusedLabels": true,
+		"alwaysStrict": true,
+		"exactOptionalPropertyTypes": true,
+		"paths": {
+			"#bot": [
+				"./src/Structures/client/Dimitra"
+			],
+			"#sern/ext": [
+				"./src/Structures/sern/sIndex"
+			],
+			"#utils": [
+				"./src/Structures/Utils"
+			],
+			"#adapters/*": [
+				"./src/Structures/adapters/*"
+			]
+		}
+	},
+	"include": [
+		"./src/**/*",
+		"./src/**/*.ts",
+		"./src/**/*.json",
+		"./prisma/*"
+	]
+}

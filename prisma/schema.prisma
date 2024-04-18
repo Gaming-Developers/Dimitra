@@ -1,0 +1,123 @@
+datasource db {
+  provider = "mongodb"
+  url      = env("MONGO_URI")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+type ResponseId {
+  responseId String
+}
+
+model Reponses {
+  id        String       @id @default(auto()) @map("_id") @db.ObjectId
+  responses ResponseId[]
+}
+
+type Allowedusers {
+  userId String
+}
+
+type Allowedroles {
+  roleId String
+}
+
+model AppControl {
+  id    String   @id @map("_id")
+  users Allowedusers[]
+  roles Allowedroles[]
+}
+
+model Cooldowns {
+  id      String   @id @map("_id")
+  expires DateTime
+  count   Int
+}
+
+type Channel {
+  allCountChan  String?
+  botCountChan  String?
+  userCountChan String?
+  welcomeChan   String?
+  leaveChan     String?
+  rulesChan     String?
+  moderatorChan String?
+}
+
+model Guilds {
+  id       String   @id @map("_id")
+  icon     String?
+  name     String
+  channels Channel?
+}
+
+type Reports {
+  count           Int
+  threadId        String
+  originalMessage String
+}
+
+model Dmreports {
+  id          String    @id @map("_id")
+  reportCount Int       @default(0)
+  reports     Reports[]
+}
+
+model Verification {
+  memberId  String @id @map("_id")
+  messageId String
+}
+
+type BlacklistUser {
+  id     String
+  reason String
+}
+
+model Blacklists {
+  id    String          @id @default(auto()) @map("_id") @db.ObjectId
+  users BlacklistUser[]
+}
+
+model Suggestions {
+  messageId String @id @map("_id")
+  channelId String
+  users     Users
+  counts    Counts
+}
+
+type Users {
+  yes String[]
+  no  String[]
+}
+
+type Counts {
+  yes Int?
+  no  Int?
+}
+
+type Warnings {
+  warnId      String
+  moderatorId String
+  guildId     String
+  reason      String
+  expires     DateTime
+}
+
+type User {
+  id    String
+  warns Warnings[]
+}
+
+model Warns {
+  id    String @id @map("_id")
+  users User[]
+}
+
+//TICKETS
+//Categories: General, Staff Report, Management, Merge, Appeals, Store Support
+
+model Tickets {
+  id String @id @map("_id") //guild id
+}
