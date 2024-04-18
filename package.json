@@ -2,7 +2,7 @@
 	"name": "dimitra",
 	"version": "1.0.0",
 	"private": true,
-	"description": "AIO bot for Miami-rp disord server.",
+	"description": "Security bot for SASRP | USBP disord server.",
 	"main": "dist/index.js",
 	"scripts": {
 		"build": "rm -rf dist && sern build",
