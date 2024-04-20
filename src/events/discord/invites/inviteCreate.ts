@@ -10,13 +10,14 @@ export default discordEvent({
     } else {
       const guild = invite.guild! as Guild;
       if (guild.id === "1228509238889021502") {
+        const member = (await guild.members.fetch()).get(invite.inviterId!);
         if (guild.vanityURLCode || invite.code !== "HMAnKbVJvX") {
           const link =
             "https://discord.com/channels/1228509238889021502/1228509239731818576/1228512815996997703";
           const opts = {
-            content:
-              guild.name +
-              ` already has an official server invite. Please check ${link} for the link! Your invite has been deleted!`,
+            content: `${member}
+            ${guild.name} already has an official server invite. 
+            Please check ${link} for the link! Your invite has been deleted!`,
           };
 
           const chan = guild.channels.cache.get(
