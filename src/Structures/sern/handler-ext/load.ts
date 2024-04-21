@@ -61,5 +61,7 @@ export const env = load({
 	OWNER_IDS: Array<string>,
 	DISCORD_TOKEN: String,
 	MONGO_URI: String,
-	MAIN_GUILD: String
+	MAIN_GUILD_ID: String,
+	REPORT_CHAN_ID: String,
+	NODE_ENV: String
 });
