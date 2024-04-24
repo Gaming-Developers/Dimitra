@@ -7,15 +7,6 @@ generator client {
   provider = "prisma-client-js"
 }
 
-type ResponseId {
-  responseId String
-}
-
-model Reponses {
-  id        String       @id @default(auto()) @map("_id") @db.ObjectId
-  responses ResponseId[]
-}
-
 type Allowedusers {
   userId String
 }
@@ -25,9 +16,22 @@ type Allowedroles {
 }
 
 model AppControl {
-  id    String   @id @map("_id")
+  id    String         @id @map("_id")
   users Allowedusers[]
   roles Allowedroles[]
+}
+
+type Response {
+  id                String
+  createTime        DateTime
+  lastSubmittedTime DateTime
+  answers           Json[]
+}
+
+model Forms {
+  id           String     @id @default(auto()) @map("_id") @db.ObjectId
+  googleFormId String
+  responses    Response[]
 }
 
 model Cooldowns {

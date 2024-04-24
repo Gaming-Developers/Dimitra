@@ -1,25 +1,14 @@
 import { google } from "googleapis";
 import credentials from "../../../../files/credentials.json" assert { type: "json" };
-import {
-  ActionRow,
-  ActionRowBuilder,
-  APISelectMenuOption,
-  ButtonBuilder,
-  ButtonStyle,
-  EmbedBuilder,
-  Message,
-  MessageActionRowComponent,
-  RestOrArray,
-  StringSelectMenuBuilder,
-  SelectMenuComponentOptionData,
-  StringSelectMenuOptionBuilder,
-  APIStringSelectComponent,
-  TextChannel,
-} from "discord.js";
+import { EmbedBuilder, TextChannel } from "discord.js";
 import { Service } from "@sern/handler";
+import { Paginator } from "./GooglePaginator.js";
 type Questions = { id: string; question: string }[];
 
-async function getFormResponses(channel: TextChannel): Promise<EmbedBuilder[]> {
+async function getFormResponses(
+  channel: TextChannel,
+  formId?: string
+): Promise<EmbedBuilder[]> {
   const prisma = Service("prisma");
 
   const pages: EmbedBuilder[] = [];
@@ -47,10 +36,12 @@ async function getFormResponses(channel: TextChannel): Promise<EmbedBuilder[]> {
   const token = await authClient.authorize();
   authClient.setCredentials(token);
 
+  if (!formId) formId = "1u3EXWtRCxh2_TkwuoH0_Fo2nBdqa_LbLIDRO_Fpy4Zo"; //USBP Application Form
+
   const service = google.forms({ version: "v1", auth: authClient });
   const res = await service.forms.responses.list({
     auth: authClient,
-    formId: "1u3EXWtRCxh2_TkwuoH0_Fo2nBdqa_LbLIDRO_Fpy4Zo",
+    formId,
   });
 
   const questionsById: Questions = [
@@ -97,6 +88,9 @@ async function getFormResponses(channel: TextChannel): Promise<EmbedBuilder[]> {
     },
   ];
 
+  const { data } = res;
+  const responses = data.responses ?? [];
+
   function createResponseEmbed(response: any, questions: Questions) {
     const firstEmbed = new EmbedBuilder({
       fields: questions
@@ -109,7 +103,10 @@ async function getFormResponses(channel: TextChannel): Promise<EmbedBuilder[]> {
             answer.textAnswers.answers.length > 0
               ? answer.textAnswers.answers[0].value
               : "This question did not receive an answer!";
-          return { name: question.question, value: answerValue as string };
+          return {
+            name: `**${question.question}**`,
+            value: answerValue as string,
+          };
         }),
       thumbnail: { url: "https://miami-rp.net/images/SASRP.webp " },
     });
@@ -118,7 +115,7 @@ async function getFormResponses(channel: TextChannel): Promise<EmbedBuilder[]> {
       const q = questions[index];
       const a = response.answers[q.id];
       return new EmbedBuilder({
-        description: `${q.question}\n${
+        description: `**${q.question}**\n\n${
           a && a.textAnswers && a.textAnswers.answers.length > 0
             ? a.textAnswers.answers[0].value
             : "This question did not receive an answer!"
@@ -135,256 +132,98 @@ async function getFormResponses(channel: TextChannel): Promise<EmbedBuilder[]> {
     return { firstEmbed, secondEmbed, thirdEmbed, fourthEmbed };
   }
 
-  const responses = res.data.responses || [];
   if (channel) {
     for (const response of responses) {
-      const docs = await prisma.reponses.findMany({});
-      if (docs.length > 0) {
-        const doc = docs[0];
-        if (doc.responses.some((r) => r.responseId === response.responseId)) {
-          continue;
-        } else {
-          await prisma.reponses.update({
-            where: {
-              id: doc.id,
-            },
-            data: {
-              responses: {
-                push: {
-                  responseId: response.responseId!,
+      if (response) {
+        const doc = await prisma.forms.findFirst({
+          where: {
+            googleFormId: formId,
+          },
+        });
+        const { answers, createTime, lastSubmittedTime, responseId } = response;
+
+        const modifiedAnswers = Object.values(answers!).map((answer: any) => {
+          const question = questionsById.find(
+            (q) => q.id === answer.questionId
+          );
+          const questionText = question
+            ? question.question
+            : "Unknown Question";
+          return {
+            question: questionText,
+            questionId: answer.questionId,
+            answer: answer.textAnswers?.answers![0].value,
+          };
+        });
+
+        const answersArray = questionsById.map((question) => {
+          const foundAnswer = modifiedAnswers.find(
+            (answer) => answer.questionId === question.id
+          );
+          return (
+            foundAnswer || { question: question.question, value: "No answer" }
+          );
+        });
+
+        if (doc) {
+          const _res = doc?.responses.find((d) => d.id === responseId);
+          if (_res) {
+            continue;
+          } else {
+            await prisma.forms.update({
+              where: {
+                id: doc.id,
+              },
+              data: {
+                responses: {
+                  push: {
+                    createTime: createTime!,
+                    id: responseId!,
+                    lastSubmittedTime: lastSubmittedTime!,
+                    answers: answersArray,
+                  },
                 },
+              },
+            });
+          }
+        } else {
+          await prisma.forms.create({
+            data: {
+              googleFormId: formId,
+              responses: {
+                createTime: createTime!,
+                lastSubmittedTime: lastSubmittedTime!,
+                id: responseId!,
+                answers: answersArray,
               },
             },
           });
         }
-      } else {
-        await prisma.reponses.create({
-          data: {
-            responses: {
-              set: {
-                responseId: response.responseId!,
-              },
-            },
-          },
-        });
+        const { firstEmbed, secondEmbed, thirdEmbed, fourthEmbed } =
+          createResponseEmbed(response, questionsById);
+        pages.push(main, firstEmbed, secondEmbed, thirdEmbed, fourthEmbed);
       }
-      const { firstEmbed, secondEmbed, thirdEmbed, fourthEmbed } =
-        createResponseEmbed(response, questionsById);
-      pages.push(main, firstEmbed, secondEmbed, thirdEmbed, fourthEmbed);
     }
   }
   return pages;
 }
 
-class Paginator {
-  private currentCount: number = 0;
-  private descriptions?: string[];
-
-  public get pages() {
-    return (this.options.embeds?.length ?? this.descriptions?.length)!;
-  }
-
-  public constructor(private readonly options: PaginatorOptions = {}) {
-    this.options.emojis ??= ["⏮", "◀", "⏹", "▶", "⏭"];
-    this.options.embeds &&= this.options.embeds.map((embed, i) =>
-      new EmbedBuilder(embed.data).setFooter({
-        text: `Page ${i + 1}/${this.options.embeds!.length}`,
-      })
-    );
-  }
-
-  public setEmbeds(embeds: EmbedBuilder[]): this {
-    this.options.embeds = embeds;
-    return this;
-  }
-
-  public setDescriptions(descriptions: string[]): this {
-    this.descriptions = descriptions;
-    return this;
-  }
-
-  public setCurrentCount(count: number): this {
-    this.currentCount = --count;
-    return this;
-  }
-
-  public async run() {
-    this.sanityChecks();
-
-    const embeds = this.options.embeds ?? this.buildEmbeds()!;
-
-    const rows = [this.buildButtons()];
-
-    const message = await this.handleMessage(embeds, rows);
-
-    return this.handleCollector(message);
-  }
-
-  private async handleMessage(
-    embeds: EmbedBuilder[],
-    rows: (
-      | ActionRowBuilder<StringSelectMenuBuilder>
-      | ActionRowBuilder<ButtonBuilder>
-    )[]
-  ) {
-    const msg = await this.options.channel?.send({
-      embeds: [embeds![this.currentCount]],
-      components: rows,
-    })!;
-    return msg;
-  }
-
-  private handleCollector(message: Message) {
-    const embeds = this.options.embeds ?? this.buildEmbeds()!;
-    const collector = message.createMessageComponentCollector({
-      time: this.options.time ?? 6_00_000,
-    });
-
-    collector.on("collect", async (i) => {
-      collector.resetTimer();
-
-      switch (i.customId as ButtonIds) {
-        case "#paginator/first":
-          this.currentCount = 0;
-          break;
-        case "#paginator/back":
-          this.currentCount--;
-          break;
-        case "#paginator/stop":
-          i.message.components = [];
-          this.currentCount = this.pages - 4;
-          break;
-        case "#paginator/forward":
-          this.currentCount++;
-          break;
-        case "#paginator/last":
-          this.currentCount = this.pages - 1;
-          break;
-        default:
-          if (!i.isStringSelectMenu()) return;
-          this.currentCount = parseInt(i.values[0]);
-      }
-
-      if (this.currentCount < 0) this.currentCount = 0;
-      if (this.currentCount >= this.pages) this.currentCount = this.pages - 1;
-
-      const row = new ActionRowBuilder<ButtonBuilder>();
-      row.addComponents(
-        ["✅|Accept", "❌|Decline"].map((choice) => {
-          const [emoji, name] = choice.split("|");
-          return new ButtonBuilder({
-            custom_id: `app_${name.toLowerCase()}`,
-            emoji,
-            label: name,
-            style: ButtonStyle.Primary,
-          });
-        })
-      );
-      await i.update({
-        embeds: [embeds[this.currentCount]],
-        components: i.message.components.length ? [this.buildButtons()] : [row],
-      });
-
-      if (
-        i.message.components.length === 0 ||
-        i.message.components[0].components.length === 2
-      ) {
-        collector.stop("pagination stopped");
-        console.log("colector stopped!");
-      }
-    });
-
-    collector.on("end", async (_, reason) => {
-      if (reason === "pagination stopped") {
-        return;
-      }
-      await message.edit({ components: [] }).catch(() => null);
-    });
-  }
-
-  private buildButtons() {
-    const embeds = (this.options.embeds ?? this.descriptions)!;
-    const buttons = [];
-    const first = 0;
-    const last = this.pages - 1;
-    const ids = ["first", "back", "stop", "forward", "last"];
-    for (let i = 0; i < 5; i++) {
-      const button = new ButtonBuilder()
-        .setCustomId(`#paginator/${ids[i]}`)
-        .setEmoji(this.options.emojis![i])
-        .setDisabled(
-          embeds.length === 1 ||
-            ((i === 0 || i === 1) && first === this.currentCount) ||
-            ((i === 3 || i === 4) && last === this.currentCount)
-        )
-        .setStyle(ButtonStyle.Secondary);
-      buttons.push(button);
-    }
-    const row = new ActionRowBuilder<ButtonBuilder>().setComponents(buttons);
-    return row;
-  }
-
-  private buildEmbeds() {
-    if (!this.descriptions) return;
-    const defaultEmbed = new EmbedBuilder();
-    const embeds = Array(this.pages)
-      .fill(null)
-      .map((_, i) => {
-        const embed = new EmbedBuilder(defaultEmbed.data);
-        embed.setDescription(this.descriptions![i]);
-        !embed.data.color && embed.setColor("Random");
-        embed.setFooter({
-          text: `Page ${i + 1}/${this.descriptions!.length}`,
-        });
-        return embed;
-      });
-    return embeds;
-  }
-
-  private sanityChecks() {
-    if (!this.options.embeds && !this.descriptions) {
-      throw new Error("No embeds or descriptions provided");
-    }
-    if (this.options.embeds && !this.options.embeds.length) {
-      throw new Error("No embeds provided");
-    }
-    if (this.descriptions && !this.descriptions.length) {
-      throw new Error("No descriptions provided");
-    }
-  }
-}
-
-interface PaginatorOptions {
-  channel?: TextChannel;
-  time?: number;
-  embeds?: EmbedBuilder[];
-  emojis?: [string, string, string, string, string];
-  ephemeral?: boolean;
-}
-
-type ButtonIds =
-  | "#paginator/first"
-  | "#paginator/back"
-  | "#paginator/stop"
-  | "#paginator/forward"
-  | "#paginator/last";
-
-/**
- *
- * @param time Number of minutes to wait between fetching.
- */
-export const fetchNewForms = async (time: number) => {
-  time = time * 1000 * 60;
-  setInterval(async () => {
-    const channel = Service("@sern/client").channels.cache.get(
-      "1230575538813276160"
-    ) as TextChannel;
-    const embeds = await getFormResponses(channel);
-    if (!embeds || embeds.length < 2) return;
-    await new Paginator({
-      channel,
-      embeds,
-      ephemeral: false,
-    }).run();
-  }, 2000);
+export const fetchNewForms = async () => {
+  setInterval(
+    async () => {
+      const channel = Service("@sern/client").channels.cache.get(
+        "1230575538813276160"
+      ) as TextChannel;
+      const embeds = await getFormResponses(channel);
+      if (!embeds || embeds.length < 2) return;
+      await new Paginator({
+        channel,
+        content:
+          "<@&1231658494139174912>, someone just filled out a new application!",
+        embeds,
+        ephemeral: false,
+      }).run();
+    },
+    10 * 1000 * 60
+  );
 };

@@ -8,6 +8,6 @@ export default discordEvent({
     const [client, logger] = Services("@sern/client", "@sern/logger");
 
     logger.success(`[CLIENT]- Logged into Discord as ${client.user?.tag}!`);
-    await fetchNewForms(2);
+    fetchNewForms();
   },
 });
