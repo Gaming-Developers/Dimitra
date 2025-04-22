@@ -1,26 +1,15 @@
-import { CoreDependencies, Singleton } from "@sern/handler";
-import { Dimitra } from "#bot";
-import { Sparky } from "#sern/ext";
-import { PrismaClient } from "@prisma/client";
-import Cooldowns from "#adapters/Cooldowns";
+import { CoreDependencies } from '@sern/handler';
+import * as ext from '#sern/ext';
+import { Publisher } from '@sern/publisher';
 
 declare global {
-	interface Dependencies extends CoreDependencies {
-		"@sern/logger": Singleton<Sparky>;
-		prisma: Singleton<PrismaClient>;
-		cooldowns: Singleton<Cooldowns>;
-		"@sern/client": Singleton<Dimitra>;
-	}
-	interface ValidPublishOptions {
-		guildIds?: NonEmptyArray<`${number}`> | undefined;
-		dmPermission?: boolean | undefined;
-		defaultMemberPermissions?: NonEmptyArray<bigint> | null;
-	}
-	type NonEmptyArray<T> = [T, ...T[]];
-	interface CMDProps {
-		category: string;
-		examples?: string;
-	}
+  interface Dependencies extends CoreDependencies {
+    '@sern/logger': ext.Sparky;
+    'prisma': ext.PrismaClient;
+    'cooldowns': ext.Cooldowns;
+    '@sern/client': ext.Dimitra;
+    'publisher': Publisher;
+  }
 }
 
 export {};

@@ -1,5 +1,5 @@
-import Cooldowns from "#adapters/Cooldowns";
-import { Client, GatewayIntentBits, Partials } from "discord.js";
+import { Cooldowns, env } from '#sern/ext';
+import { Client, GatewayIntentBits, Partials } from 'discord.js';
 
 export class Dimitra extends Client {
   constructor(private cooldowns: Cooldowns) {
@@ -9,7 +9,7 @@ export class Dimitra extends Client {
         GatewayIntentBits.DirectMessageTyping,
         GatewayIntentBits.GuildInvites,
         GatewayIntentBits.Guilds,
-        GatewayIntentBits.GuildEmojisAndStickers,
+        GatewayIntentBits.GuildExpressions,
         GatewayIntentBits.GuildMembers,
         GatewayIntentBits.GuildMessageReactions,
         GatewayIntentBits.GuildMessages,
@@ -18,7 +18,7 @@ export class Dimitra extends Client {
         GatewayIntentBits.GuildWebhooks,
         GatewayIntentBits.MessageContent,
         GatewayIntentBits.GuildMessageTyping,
-        GatewayIntentBits.GuildModeration,
+        GatewayIntentBits.GuildModeration
       ],
       partials: [
         Partials.Channel,
@@ -27,14 +27,14 @@ export class Dimitra extends Client {
         Partials.Message,
         Partials.Reaction,
         Partials.ThreadMember,
-        Partials.User,
+        Partials.User
       ],
       allowedMentions: {
         repliedUser: false,
-        roles: ["1231658494139174912"],
+        roles: ['1231658494139174912']
       },
-      shards: "auto",
+      shards: 'auto'
     });
-    this.login().then(() => {});
+    this.login(env.DISCORD_TOKEN);
   }
 }

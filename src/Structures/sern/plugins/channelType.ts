@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * @plugin
  * This plugin checks if a channel is the specified type
@@ -19,21 +18,21 @@
  * ```
  * @end
  */
-import { ChannelType } from "discord.js";
-import { CommandControlPlugin, CommandType, controller } from "@sern/handler";
+import { ChannelType } from 'discord.js';
+import { CommandControlPlugin, CommandType, controller } from '@sern/handler';
 export function channelType(channelType: ChannelType[], onFail?: string) {
-	return CommandControlPlugin<CommandType.Both>(async (ctx, args) => {
-		let channel = ctx.channel?.type;
-		//for some reason the dm channel type was returning undefined at some points
-		if (channel === undefined) {
-			channel = ChannelType.DM;
-		}
-		if (channelType.includes(channel)) {
-			return controller.next();
-		}
-		if (onFail) {
-			await ctx.reply(onFail);
-		}
-		return controller.stop();
-	});
+  return CommandControlPlugin<CommandType.Both>(async ctx => {
+    let channel = ctx.channel?.type;
+    //for some reason the dm channel type was returning undefined at some points
+    if (channel === undefined) {
+      channel = ChannelType.DM;
+    }
+    if (channelType.includes(channel)) {
+      return controller.next();
+    }
+    if (onFail) {
+      await ctx.reply(onFail);
+    }
+    return controller.stop();
+  });
 }

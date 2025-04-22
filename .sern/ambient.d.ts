@@ -3,97 +3,68 @@ declare var __PROD__: boolean
 declare var __VERSION__: string
 declare namespace NodeJS {
     interface ProcessEnv {
-        npm_package_scripts_node:string
-        npm_package_devDependencies__types_node:string
+        LESSOPEN:string
         USER:string
         SSH_CLIENT:string
         npm_config_user_agent:string
-        npm_package_dependencies__spark_ts_logger:string
         XDG_SESSION_TYPE:string
         GIT_ASKPASS:string
-        npm_package_dependencies_blob:string
-        npm_package_devDependencies_nodemon:string
         npm_node_execpath:string
         SHLVL:string
         BROWSER:string
-        MOTD_SHOWN:string
+        npm_config_noproxy:string
         HOME:string
-        npm_package_dependencies_moment_timezone:string
-        npm_package_imports__adapters___0:string
+        OLDPWD:string
         TERM_PROGRAM_VERSION:string
-        NVM_BIN:string
         VSCODE_IPC_HOOK_CLI:string
-        NVM_INC:string
-        COREPACK_ROOT:string
-        npm_package_dependencies_google_auth_library:string
+        npm_package_json:string
         VSCODE_GIT_ASKPASS_MAIN:string
-        npm_package_scripts_gen:string
         VSCODE_GIT_ASKPASS_NODE:string
-        BOT_TOKEN:string
         SSL_CERT_FILE:string
-        npm_package_keywords_0:string
+        npm_config_userconfig:string
+        npm_config_local_prefix:string
+        DBUS_SESSION_BUS_ADDRESS:string
         COLORTERM:string
-        npm_package_description:string
-        npm_package_keywords_1:string
-        npm_package_devDependencies_typescript:string
-        NVM_DIR:string
-        npm_package_keywords_2:string
-        npm_package_dependencies_sourcebin:string
-        npm_package_scripts_dev:string
-        npm_package_keywords_3:string
-        npm_package_devDependencies_prettier:string
+        COLOR:string
         LOGNAME:string
-        npm_package_scripts_pm2_restart:string
-        npm_package_type:string
         _:string
-        npm_package_private:string
+        npm_config_prefix:string
+        npm_config_npm_version:string
         XDG_SESSION_CLASS:string
-        npm_package_dependencies__prisma_client:string
-        npm_package_dependencies__sern_handler:string
-        npm_package_maintainers_0_id:string
-        npm_config_registry:string
         TERM:string
         XDG_SESSION_ID:string
-        npm_package_dependencies_axios:string
-        npm_package_dependencies_colorette:string
+        npm_config_cache:string
         npm_config_node_gyp:string
         PATH:string
-        npm_package_name:string
-        npm_package_devDependencies_prisma:string
         NODE:string
+        npm_package_name:string
         XDG_RUNTIME_DIR:string
-        npm_config_frozen_lockfile:string
         SSL_CERT_DIR:string
         LANG:string
+        DOTNET_BUNDLE_EXTRACT_BASE_DIR:string
         LS_COLORS:string
         VSCODE_GIT_IPC_HANDLE:string
         TERM_PROGRAM:string
-        npm_package_main:string
-        npm_package_scripts_publish:string
-        npm_package_dependencies_discord_js:string
         npm_lifecycle_script:string
         SHELL:string
         npm_package_version:string
-        npm_package_pnpm_overrides_undici___6_0_0___6_6_0:string
         npm_lifecycle_event:string
-        npm_package_scripts_build:string
-        npm_package_dependencies_undici:string
-        npm_package_imports__bot_0:string
-        npm_package_dependencies__google_cloud_local_auth:string
-        npm_package_dependencies__googleapis_forms:string
-        npm_package_dependencies_googleapis:string
-        npm_package_dependencies_mongoose:string
-        npm_package_imports__sern_ext_0:string
+        LESSCLOSE:string
         VSCODE_GIT_ASKPASS_EXTRA_ARGS:string
-        npm_package_imports__utils_0:string
+        npm_config_globalconfig:string
+        npm_config_init_module:string
         PWD:string
         npm_execpath:string
         SSH_CONNECTION:string
-        NVM_CD_FLAGS:string
-        npm_package_scripts_pm2_start:string
-        npm_package_maintainers_0_name:string
+        XDG_DATA_DIRS:string
+        npm_config_global_prefix:string
         npm_command:string
-        PNPM_SCRIPT_SRC_DIR:string
         INIT_CWD:string
+        EDITOR:string
+        DISCORD_TOKEN:string
+        OWNER_ID:string
+        MAIN_GUILD_ID:string
+        MONGO_URI:string
+        NODE_ENV:string
     }
 }

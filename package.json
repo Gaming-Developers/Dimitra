@@ -1,72 +1,48 @@
 {
-	"name": "dimitra",
-	"version": "1.0.0",
-	"private": true,
-	"description": "Security bot for SASRP | USBP disord server.",
-	"main": "dist/index.js",
-	"scripts": {
-		"build": "rm -rf dist && sern build",
-		"dev": "nodemon .",
-		"node": "node .",
-		"pm2-start": "pm2 start ecosystem.config.cjs",
-		"pm2-restart": "pm2 restart Dimitra",
-		"gen": "npx prisma generate",
-		"publish": "sern commands publish -W"
-	},
-	"keywords": [
-		"typescript",
-		"sern",
-		"discord.js",
-		"Dimitra"
-	],
-	"dependencies": {
-		"@google-cloud/local-auth": "^3.0.1",
-		"@googleapis/forms": "^2.0.5",
-		"@prisma/client": "5.12.1",
-		"@sern/handler": "^3.3.4",
-		"@spark.ts/logger": "^1.4.0",
-		"axios": "^1.6.8",
-		"blob": "^0.1.0",
-		"colorette": "^2.0.20",
-		"discord.js": "^14.14.1",
-		"google-auth-library": "^9.8.0",
-		"googleapis": "^134.0.0",
-		"moment-timezone": "^0.5.45",
-		"mongoose": "^8.3.2",
-		"sourcebin": "^5.0.0",
-		"undici": "^6.13.0"
-	},
-	"devDependencies": {
-		"@types/node": "^20.12.7",
-		"nodemon": "^3.1.0",
-		"prettier": "^3.2.5",
-		"prisma": "^5.12.1",
-		"typescript": "^5.4.5"
-	},
-	"maintainers": [
-		{
-			"name": "notsomarv",
-			"id": "371759410009341952"
-		}
-	],
-	"imports": {
-		"#sern/ext": [
-			"./dist/Structures/sern/sIndex.js"
-		],
-		"#bot": [
-			"./dist/Structures/client/Dimitra.js"
-		],
-		"#utils": [
-			"./dist/Structures/Utils.js"
-		],
-		"#adapters/*": [
-			"./dist/Structures/adapters/*.js"
-		]
-	},
-	"type": "module",
-	"pnpm": {
-		"overrides": {
-			"undici@>=6.0.0 <=6.6.0": ">=6.6.1"
-		}
-	}
+  "name": "dimitra",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Security bot for FiveM servers.",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "rm -rf dist && sern build",
+    "dev": "nodemon .",
+    "node": "node .",
+    "gen": "npx prisma generate"
+  },
+  "keywords": [
+    "typescript",
+    "sern",
+    "discord.js",
+    "Dimitra"
+  ],
+  "dependencies": {
+    "@prisma/client": "^6.6.0",
+    "@sern/handler": "^4.2.4",
+    "@sern/publisher": "^1.1.2",
+    "@spark.ts/logger": "^1.4.0",
+    "colorette": "^2.0.20",
+    "discord.js": "^14.18.0",
+    "googleapis": "^148.0.0",
+    "moment-timezone": "^0.5.48"
+  },
+  "devDependencies": {
+    "@types/node": "^22.14.1",
+    "nodemon": "^3.1.9",
+    "prettier": "^3.5.3",
+    "prisma": "^6.6.0",
+    "typescript": "^5.8.3"
+  },
+  "maintainers": [
+    {
+      "name": "notsomarv",
+      "id": "371759410009341952"
+    }
+  ],
+  "imports": {
+    "#sern/ext": [
+      "./dist/Structures/sern/sIndex.js"
+    ]
+  },
+  "type": "module"
 }

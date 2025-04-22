@@ -3,7 +3,7 @@
 .env
 /.sern/command-data-remote.json
 /.sern/generated
-files/credentials.json
 tickets/
 README.md
-pnpm-lock.yaml
+package-lock.json
+src/Structures/adapters/Google/credentials.ts

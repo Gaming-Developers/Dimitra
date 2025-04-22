@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * @plugin
  * This is dmOnly plugin, it allows commands to be run only in DMs.
@@ -18,13 +17,13 @@
  * ```
  * @end
  */
-import { CommandControlPlugin, CommandType, controller } from "@sern/handler";
+import { CommandControlPlugin, CommandType, controller } from '@sern/handler';
 export function dmOnly(content?: string, ephemeral?: boolean) {
-	//  For discord.js you should have the Partials.Channel and DirectMessages intent enabled.
-	return CommandControlPlugin<CommandType.Both>(async (ctx, _) => {
-		if (ctx.channel?.isDMBased()) return controller.next();
+  //  For discord.js you should have the Partials.Channel and DirectMessages intent enabled.
+  return CommandControlPlugin<CommandType.Both>(async ctx => {
+    if (ctx.channel?.isDMBased()) return controller.next();
 
-		if (content) await ctx.reply({ content, ephemeral }); // Change this if you want or remove it for silent deny
-		return controller.stop();
-	});
+    if (content) await ctx.reply({ content, flags: ephemeral ? 64 : undefined }); // Change this if you want or remove it for silent deny
+    return controller.stop();
+  });
 }

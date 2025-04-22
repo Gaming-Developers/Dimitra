@@ -11,15 +11,16 @@ import {
 	RestOrArray,
 	StringSelectMenuBuilder,
 	SelectMenuComponentOptionData,
-	SelectMenuOptionBuilder,
+	StringSelectMenuOptionBuilder,
 	User,
 	APIStringSelectComponent,
+	TextChannel,
 } from "discord.js";
 
 export class Paginator {
 	private currentCount: number = 0;
 	private selectMenuOptions?: RestOrArray<
-		SelectMenuOptionBuilder | APISelectMenuOption | SelectMenuComponentOptionData
+	StringSelectMenuOptionBuilder | APISelectMenuOption | SelectMenuComponentOptionData
 	>;
 	private descriptions?: string[];
 
@@ -55,7 +56,7 @@ export class Paginator {
 
 	public setSelectMenuOptions(
 		...options: RestOrArray<
-			SelectMenuOptionBuilder | APISelectMenuOption | SelectMenuComponentOptionData
+		StringSelectMenuOptionBuilder | APISelectMenuOption | SelectMenuComponentOptionData
 		>
 	): this {
 		this.selectMenuOptions = options;
@@ -92,7 +93,7 @@ export class Paginator {
 		embeds: EmbedBuilder[],
 		rows: (ActionRowBuilder<StringSelectMenuBuilder> | ActionRowBuilder<ButtonBuilder>)[]
 	) {
-		const msg = await message.channel.send({
+		const msg = await (message.channel as TextChannel).send({
 			embeds: [embeds![this.currentCount]],
 			components: rows,
 		});

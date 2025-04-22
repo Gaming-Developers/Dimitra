@@ -19,24 +19,22 @@
  * @end
  */
 
-import { CommandType, CommandControlPlugin, controller } from "@sern/handler";
-import { env } from "#sern/ext";
+import { CommandType, CommandControlPlugin, controller } from '@sern/handler';
+import { env } from '#sern/ext';
 
-export function ownerOnly(options: { owners?: string[]; failMsg?: string }) {
-	return CommandControlPlugin<CommandType.Both>(async (ctx) => {
-		let { failMsg, owners } = options;
-		const config = env.OWNER_IDS;
-		if (!owners) {
-			if (!config || config.length < 1) {
-				return controller.stop(); //! Important: It stops the execution of command!
-			} else owners = config;
-		}
-		if (owners && owners.includes(ctx.user.id)) {
-			return controller.next();
-		}
-		await ctx.reply(
-			`${failMsg}` ?? "Only bot owners can use this feature!!!"
-		);
-		return controller.stop(); //! Important: It stops the execution of command!
-	});
+export function ownerOnly(options: { owner?: string; failMsg?: string }) {
+  return CommandControlPlugin<CommandType.Both>(async ctx => {
+    let { failMsg, owner } = options;
+    const config = env.OWNER_ID;
+    if (!owner) {
+      if (!config || config.length < 1) {
+        return controller.stop(); //! Important: It stops the execution of command!
+      } else owner = config;
+    }
+    if (owner && owner === ctx.user.id) {
+      return controller.next();
+    }
+    await ctx.reply(failMsg ?? 'Only bot owners can use this feature!!!');
+    return controller.stop(); //! Important: It stops the execution of command!
+  });
 }

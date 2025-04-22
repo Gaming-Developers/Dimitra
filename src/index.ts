@@ -1,18 +1,14 @@
-import { Sern, makeDependencies } from "@sern/handler";
-import { Dimitra } from "#bot";
-import { Sparky } from "#sern/ext";
-import { Prisma } from "#adapters/Prisma";
-import Cooldowns from "#adapters/Cooldowns";
+import { Sern, makeDependencies } from '@sern/handler';
+import * as ext from '#sern/ext';
+import * as config from './config.js';
+import { Publisher } from '@sern/publisher';
 
 await makeDependencies(({ add, swap }) => {
-	const logger = new Sparky("debug", "highlight");
-	const prisma = new Prisma(logger);
-	const cooldown = new Cooldowns(prisma);
-	const client = new Dimitra(cooldown);
-	swap("@sern/logger", () => logger);
-	add("prisma", () => prisma);
-	add("cooldowns", () => cooldown);
-	add("@sern/client", () => client);
+  add('@sern/client', () => ext.client);
+  swap('@sern/logger', () => ext.logger);
+  add('prisma', () => ext.prisma);
+  add('cooldowns', () => ext.cooldowns);
+  add('publisher', deps => new Publisher(deps['@sern/modules'], deps['@sern/emitter'], deps['@sern/logger']));
 });
 
-Sern.init("file");
+Sern.init({ commands: ['./dist/commands', './dist/components'], events: ['./dist/events'], defaultPrefix: 'd!' });
